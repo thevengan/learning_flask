@@ -1,10 +1,11 @@
 from flask import Flask, render_template, request, session, redirect, url_for
 from models import db, User
 from forms import SignupForm, LoginForm
+import os
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:llama555@localhost/learningflask'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 db.init_app(app)
 
 app.secret_key = "development-key"
@@ -22,11 +23,13 @@ def about():
 
 @app.route("/signup", methods=['GET', 'POST'])
 def signup():
+    if 'email' in session:
+        return redirect(url_for('home'))
     form = SignupForm()
 
     if request.method == 'POST':
         if form.validate() == False:
-            return render_template('signup.html', form=form)
+            return render_template('signup.html', form = form)
         else:
             newuser = User(form.first_name.data, form.last_name.data, form.email.data, form.password.data)
             db.session.add(newuser)
@@ -35,11 +38,14 @@ def signup():
             session['email'] = newuser.email
             return redirect((url_for('home')))
     elif request.method == 'GET':
-        return render_template('signup.html', form=form)
+        return render_template('signup.html', form = form)
 
 
 @app.route("/home")
 def home():
+    if 'email' not in session:
+        return redirect(url_for('login'))
+
     return render_template("home.html")
 
 
@@ -50,6 +56,8 @@ def logout():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    if 'email' in session:
+        return  redirect(url_for('home'))
     form = LoginForm()
 
     if request.method == "POST":

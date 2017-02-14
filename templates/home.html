@@ -3,7 +3,30 @@
 {%block content %}
 <main class="hero-section">
     <div class="container">
-        <h1>Home</h1>
+        <div class="section-tabs">
+        </div>
+
+        <div class="section-map">
+            <div class="nav">
+                <form method="post" action="/home">
+                    {{ form.hidden_tag() }}
+
+                    <div class="form-group">
+                        {% if form.address.errors %}
+                            {% for error in form.address.errors %}
+                            <p class="error-message">{{ error }}</p>
+                            {% endfor %}
+                        {% endif %}
+
+                        {{ form.address(placeholder="Explore Nearby) }}
+                    </div>
+
+                    {{ form.submit(class="btn-primary") }}
+                </form>
+            </div>
+        </div>
+
+        <div class="clearfix"></div>
     </div>
 </main>
 {% endblock %}}

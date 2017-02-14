@@ -10,6 +10,8 @@ db.init_app(app)
 
 app.secret_key = "development-key"
 
+app.app_context().push()
+
 
 @app.route("/")
 def index():
@@ -79,4 +81,5 @@ def login():
 
 
 if __name__ == "__main__":
+
     app.run(debug=True)

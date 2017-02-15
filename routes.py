@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, session, redirect, url_for
-from models import db, User
+from models import db, User, Place
 from forms import SignupForm, LoginForm, AddressForm
 import os
 
@@ -16,7 +16,6 @@ app.app_context().push()
 @app.route("/")
 def index():
     return render_template("index.html")
-
 
 @app.route("/about")
 def about():
@@ -43,20 +42,30 @@ def signup():
         return render_template('signup.html', form = form)
 
 
-@app.route("/home")
+@app.route("/home", methods=["POST", "GET"])
 def home():
     if 'email' not in session:
         return redirect(url_for('login'))
 
     form = AddressForm()
+    places = []
+    my_coordinates = [29.535247, -98.575365]
+
 
     if request.method == 'POST':
         if form.validate() == False:
             return render_template('home.html', form = form)
         else:
-            pass
+            #get the address
+            address = form.address.data
+
+            p = Place()
+            my_coordinates = p.address_to_latlng(address)
+            places = p.query(address)
+
+            return render_template('home.html', form = form, my_coordinates = my_coordinates, places = places)
     elif request.method == 'GET':
-        return render_template("home.html", form = form )
+        return render_template("home.html", form = form, my_coordinates = my_coordinates, places = places)
 
 
 @app.route("/logout")

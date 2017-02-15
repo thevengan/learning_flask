@@ -37,7 +37,7 @@ class Place(object):
         return urllib.parse.urljoin("http://en.wikipedia.org/wiki/", slug.replace(' ', '_'))
 
     def address_to_latlng(self, address):
-        g = geocoder.geonames(address)
+        g = geocoder.google(address)
         return g.lat, g.lng
 
     def query(self, address):
